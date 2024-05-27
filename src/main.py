@@ -1,111 +1,61 @@
-def run_without_objet():
+from src.state import *
+
+
+def get_obj() -> Action:
+    rep = input("""
+    quel objet avez vous ?
+    a) telephone    e) clope    i) menotte
+    b) pilule       f) biere    j) none
+    c) voleur       g) loupe
+    d) inverseur    h) scie
+    """)
+    return {
+        "a": Telephone(), "e": Clope(), "i": Menotte(),
+        "b": Pilule(),    "f": Biere(), "j": None,
+        "c": Voleur(),    "g": Loupe(),
+        "d": Inverseur(), "h": Scie(),
+    }[rep]
+
+
+def get_objs() -> [Action]:
+    result = []
+    # = tant qu'on a pas none
+    while v := get_obj():
+        result.append(v)
+
+
+def get_obj_donneur() -> Action:
+    rep = input("""
+    quel objet le donneur à ?
+    a) telephone    e) clope    i) menotte
+    b) pilule       f) biere    j) none
+    c) voleur       g) loupe
+    d) inverseur    h) scie
+    """)
+    return {
+        "a": Telephone(), "e": Clope(), "i": Menotte(),
+        "b": Pilule(),    "f": Biere(), "j": None,
+        "c": Voleur(),    "g": Loupe(),
+        "d": Inverseur(), "h": Scie(),
+    }[rep]
+
+
+def get_objs_donneur() -> [Action]:
+    result = []
+    # = tant qu'on a pas none
+    while v := get_obj_donneur():
+        result.append(v)
+
+
+def run_with_objet():
     nbr_plein1 = input("nbr plein:")
     nbr_vide1 = input("nbr vide:")
-    state = SansObjet.State(nbr_plein1, nbr_vide1)
+    objets = get_objs()
+    objets_donneur = get_objs_donneur()
+    vie = int(input("combien de vie possédez-vous ?"))
+    vie_donneur = int(input("combien de vie le donneur possède ?"))
 
-    while state.nbr_plein + state.nbr_vide > 1:
-        ds = state.doit_suicider()
-        if ds:
-            print("suicidez-vous")
-            result = bool(input("c'était une cartouche pleine ? [true/false]"))
-            if result:
-                state.nbr_plein = state.nbr_plein - 1
-            else:
-                state.nbr_vide = state.nbr_vide - 1
+    state = State(nbr_plein1, nbr_vide1, objets, objets_donneur, vie, vie_donneur)
 
-        else:
-            print("tuez-le")
-            result = bool(input("c'était une cartouche pleine ? [true/false]"))
-            if result:
-                state.nbr_plein = state.nbr_plein - 1
-            else:
-                state.nbr_vide = state.nbr_vide - 1
-            nbVideJouer = input("le donneur joue, entré le nbr de cartouche vide joué:")
-            state.nbr_vide = state.nbr_vide - int(nbVideJouer)
-            state.nbr_plein = state.nbr_plein - 1
-
-
-class SansObjet:
-    class State:
-        def __init__(self, nbr_plein, nbr_vide):
-            self.nbr_plein = nbr_plein
-            self.nbr_vide = nbr_vide
-
-        def proba_plein_global(self):
-            return self.nbr_plein / (self.nbr_vide + self.nbr_plein)
-
-        def doit_suicider(self):
-            return self.proba_plein_global() < 0.50
-
-        def doit_tirer(self):
-            return self.proba_plein_global() >= 0.50
-
-
-class State:
-    def __init__(self, nbr_plein, nbr_vide, objets, objets_donneur, vie, vie_donneur):
-        self.nbr_plein = nbr_plein
-        self.nbr_vide = nbr_vide
-        self.objets_donneur = objets_donneur
-        self.objets = objets
-        self.nbr_vie_max = vie
-        self.vie = vie
-        self.vie_donneur = vie_donneur
-        # --
-        self.incertitude = 0
-        self.chance_perdre1 = 0
-        self.chance_donneur_perdre1 = 0
-
-    def proba_plein_global(self):
-        return self.nbr_plein / (self.nbr_vide + self.nbr_plein)
-
-    def doit_suicider(self):
-        return self.proba_plein_global() < 50
-
-    def doit_tirer(self):
-        return self.proba_plein_global() >= 50
-
-    def roll(self):
-        for o in self.objets:
-            print(o.utilise(self))
-
-
-class AvecObjet:
-    class Objet:
-        def utilise(self, state: State) -> int:
-            raise "unimplemented"
-
-    class Telephone(Objet):
-        def utilise(self, state) -> int:
-            pass
-
-    class Pilule(Objet):
-        def utilise(self, state) -> int:
-            pass
-
-    class Voleur(Objet):
-        def utilise(self, state) -> int:
-            pass
-
-    class Inverseur(Objet):
-        def utilise(self, state) -> int:
-            pass
-
-    class Clope(Objet):
-        def utilise(self, state) -> int:
-            pass
-
-    class Biere(Objet):
-        def utilise(self, state) -> int:
-            pass
-
-    class Loupe(Objet):
-        def utilise(self, state) -> int:
-            pass
-
-    class Scie(Objet):
-        def utilise(self, state) -> int:
-            pass
-
-    class Menotte(Objet):
-        def utilise(self, state) -> int:
-            pass
+    print("chemin avec le plus de chance de gagner:")
+    print(state.roll())
