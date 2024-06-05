@@ -23,6 +23,9 @@ class Tree:
             list_of_lists = [element.childs for element in elements_at_level]
             elements_at_level = flatten(list_of_lists)
 
+    def __str__(self):
+        return "..."
+
 
 def flatten(lists_of_lists) -> list:
     """

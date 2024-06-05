@@ -35,8 +35,8 @@ class Player:
         self.objets.append(Assassiner())
         self.objets.append(Suicider())
 
-    def as_lost(self):
-        return self.vie_gagne + self.vie_perdu == 0
+    def as_lost(self, vie_max):
+        return self.vie_gagne + self.vie_perdu + vie_max <= 0
 
 
 class State:
@@ -79,8 +79,8 @@ class State:
         """
         # le tour est finis, il n'y a plus de strategies à appliquer
         if self.nbr_cartouche() <= 0 \
-                or (self.player.as_lost()) \
-                or (self.dealer.as_lost()) \
+                or (self.player.as_lost(self.vie_max)) \
+                or (self.dealer.as_lost(self.vie_max)) \
                 or self.proba <= 0:
             return None
 
@@ -90,11 +90,19 @@ class State:
             if objet.is_needed(self):
                 # on doit controller l'évolution de l'objet state,
                 # c'est donc mieux de copier l'objet
-                result.childs.extend(objet.construire_proba_graph(deepcopy(self)))
+                result.childs.extend(objet.construire_proba_graph(deepcopy(self)).childs)
 
         return result
 
-    def find_best_solution(self):
+    def find_best_solution(self, tree: Tree) -> []:
+        """
+        c'est quoi le meilleur chemin ?
+        un chemin ou on est le plus sur ?
+        ou un chemin ou on gagne le plus ?
+
+        :param tree:
+        :return:
+        """
         pass
 
 
@@ -288,7 +296,7 @@ class Clope(Action):
         state.name = "Clope"
         state.proba = 1
 
-        next_state_true.playerActu.vie_gagne += 1 if next_state_true.playerActu.vie_gagne+next_state_true.playerActu.vie_perdu < state.vie_max else 0
+        state.playerActu.vie_gagne += 1 if state.playerActu.vie_gagne+state.playerActu.vie_perdu < state.vie_max else 0
 
         return Tree(state, [state.roll()])
 

@@ -25,6 +25,7 @@ def get_objs() -> [Action]:
         result.append(v)
     return result
 
+
 def get_obj_donneur() -> Action:
     rep = input("""
     quel objet le donneur à ?
@@ -49,6 +50,7 @@ def get_objs_donneur() -> [Action]:
 
     return result
 
+
 def run_with_objet():
     nbr_plein1 = int(input("nbr plein:"))
     nbr_vide1 = int(input("nbr vide:"))
@@ -58,8 +60,8 @@ def run_with_objet():
     vie_joueur = int(input("combien de vie possédez-vous ?"))
     vie_donneur = int(input("combien de vie le donneur possède ?"))
 
-    joueur = src.state.Player(objets, 0, 0, False, False)
-    donneur = src.state.Player(objets_donneur, 0, 0, False, False)
+    joueur = src.state.Player(objets, 0, vie_max-vie_joueur, False, False)
+    donneur = src.state.Player(objets_donneur, 0, vie_max-vie_donneur, False, False)
 
     state = State(nbr_plein1, nbr_vide1, vie_max, donneur, joueur)
 
